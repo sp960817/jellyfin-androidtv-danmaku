@@ -3,6 +3,10 @@
 
 ---
 
+> [!IMPORTANT]
+> This repository contains the **Jellyfin 弹幕版** custom build based on Jellyfin Android TV `v0.19.9`.
+> See [CUSTOM_BUILD.md](CUSTOM_BUILD.md) for the danmaku features, installation notes, and build instructions.
+
 <p align="center">
 <img alt="Logo banner" src="https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/SVG/banner-logo-solid.svg?sanitize=true"/>
 <br/><br/>

@@ -1,9 +1,16 @@
+import java.util.Properties
+
 plugins {
 	id("com.android.application")
 	kotlin("android")
 	alias(libs.plugins.kotlin.serialization)
 	alias(libs.plugins.kotlin.compose)
 	alias(libs.plugins.aboutlibraries)
+}
+
+val danmakuSigningProperties = Properties().apply {
+	val propertiesFile = rootProject.file("danmaku-signing.properties")
+	if (propertiesFile.exists()) propertiesFile.inputStream().use { load(it) }
 }
 
 android {
@@ -16,7 +23,7 @@ android {
 
 		// Release version
 		applicationId = namespace
-		versionName = project.getVersionName()
+		versionName = project.getVersionName("0.19.9-danmaku.1")
 		versionCode = getVersionCode(versionName!!)
 	}
 
@@ -42,6 +49,15 @@ android {
 				storePassword = keystorePassword
 				keyAlias = signingKeyAlias
 				keyPassword = signingKeyPassword
+			}
+		}
+
+		if (danmakuSigningProperties.size > 0) {
+			create("danmaku") {
+				storeFile = rootProject.file(danmakuSigningProperties.getProperty("storeFile")!!)
+				storePassword = danmakuSigningProperties.getProperty("storePassword")
+				keyAlias = danmakuSigningProperties.getProperty("keyAlias")
+				keyPassword = danmakuSigningProperties.getProperty("keyPassword")
 			}
 		}
 	}
@@ -82,6 +98,20 @@ android {
 
 			buildConfigField("boolean", "DEVELOPMENT", (defaultConfig.versionCode!! < 100).toString())
 		}
+
+		create("danmaku") {
+			initWith(getByName("release"))
+			matchingFallbacks += listOf("release")
+			applicationIdSuffix = ".danmaku"
+
+			resValue("string", "app_id", namespace + applicationIdSuffix)
+			resValue("string", "app_search_suggest_authority", "${namespace + applicationIdSuffix}.content")
+			resValue("string", "app_search_suggest_intent_data", "content://${namespace + applicationIdSuffix}.content/intent")
+			resValue("string", "app_name", "@string/app_name_danmaku")
+
+			buildConfigField("boolean", "DEVELOPMENT", "false")
+			signingConfig = signingConfigs.findByName("danmaku")
+		}
 	}
 
 	lint {
@@ -96,7 +126,7 @@ android {
 	}
 }
 
-base.archivesName.set("jellyfin-androidtv-v${project.getVersionName()}")
+base.archivesName.set("jellyfin-androidtv-v${android.defaultConfig.versionName}")
 
 tasks.register("versionTxt") {
 	val path = layout.buildDirectory.asFile.get().resolve("version.txt")

@@ -252,6 +252,21 @@ class UserPreferences(context: Context) : SharedPreferenceStore(
   		 * Enable PGS subtitle direct-play.
 		 */
 		var pgsDirectPlay = booleanPreference("pgs_enabled", true)
+
+		/* Danmaku */
+		var danmakuEnabled = booleanPreference("danmaku_enabled", false)
+
+		var danmakuApiUrl = stringPreference("danmaku_api_url", "")
+
+		var danmakuFontSize = intPreference("danmaku_font_size", 26)
+
+		var danmakuOpacity = intPreference("danmaku_opacity", 90)
+
+		var danmakuDisplayArea = intPreference("danmaku_display_area", 50)
+
+		var danmakuSpeed = floatPreference("danmaku_speed", 1f)
+
+		var danmakuTimeOffset = longPreference("danmaku_time_offset", 0)
 	}
 
 	init {

@@ -284,6 +284,13 @@ class PlaybackPreferencesScreen : OptionsFragment() {
 			setTitle(R.string.advanced_settings)
 
 			link {
+				setTitle(R.string.pref_danmaku)
+				setContent(R.string.pref_danmaku_description)
+				icon = R.drawable.ic_select_subtitle
+				withFragment<DanmakuPreferencesScreen>()
+			}
+
+			link {
 				setTitle(R.string.pref_playback_advanced)
 				icon = R.drawable.ic_more
 				withFragment<PlaybackAdvancedPreferencesScreen>()

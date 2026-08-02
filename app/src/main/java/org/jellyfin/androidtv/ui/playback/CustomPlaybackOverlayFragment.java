@@ -42,6 +42,7 @@ import org.jellyfin.androidtv.R;
 import org.jellyfin.androidtv.constant.CustomMessage;
 import org.jellyfin.androidtv.data.repository.CustomMessageRepository;
 import org.jellyfin.androidtv.data.service.BackgroundService;
+import org.jellyfin.androidtv.danmaku.DanmakuController;
 import org.jellyfin.androidtv.databinding.OverlayTvGuideBinding;
 import org.jellyfin.androidtv.databinding.VlcPlayerInterfaceBinding;
 import org.jellyfin.androidtv.ui.GuideChannelHeader;
@@ -61,6 +62,7 @@ import org.jellyfin.androidtv.ui.livetv.TvManager;
 import org.jellyfin.androidtv.ui.navigation.Destinations;
 import org.jellyfin.androidtv.ui.navigation.NavigationRepository;
 import org.jellyfin.androidtv.ui.playback.overlay.LeanbackOverlayFragment;
+import org.jellyfin.androidtv.preference.UserPreferences;
 import org.jellyfin.androidtv.ui.presentation.CardPresenter;
 import org.jellyfin.androidtv.ui.presentation.ChannelCardPresenter;
 import org.jellyfin.androidtv.ui.presentation.MutableObjectAdapter;
@@ -136,6 +138,9 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
     private final Lazy<NavigationRepository> navigationRepository = inject(NavigationRepository.class);
     private final Lazy<BackgroundService> backgroundService = inject(BackgroundService.class);
     private final Lazy<ImageHelper> imageHelper = inject(ImageHelper.class);
+    private final Lazy<UserPreferences> userPreferences = inject(UserPreferences.class);
+
+    private DanmakuController danmakuController;
 
     private final PlaybackOverlayFragmentHelper helper = new PlaybackOverlayFragmentHelper(this);
 
@@ -223,16 +228,46 @@ public class CustomPlaybackOverlayFragment extends Fragment implements LiveTvGui
 
         if (playbackController != null) {
             playbackController.init(new VideoManager(requireActivity(), view, helper), this);
+            danmakuController = new DanmakuController(requireContext(), binding.danmakuView, playbackController, userPreferences.getValue());
+            danmakuController.start();
         }
     }
 
     @Override
     public void onDestroyView() {
+        if (danmakuController != null) {
+            danmakuController.release();
+            danmakuController = null;
+        }
         super.onDestroyView();
 
         binding = null;
         // To fix race condition in hide timer
         mIsVisible = false;
+    }
+
+    public boolean toggleDanmaku() {
+        return danmakuController != null && danmakuController.toggle();
+    }
+
+    public void refreshDanmaku() {
+        if (danmakuController != null) danmakuController.refresh();
+    }
+
+    public String getDanmakuMatchLabel() {
+        return danmakuController != null ? danmakuController.getCurrentMatchLabel() : getString(R.string.danmaku_match_pending);
+    }
+
+    public boolean hasManualDanmakuMatch() {
+        return danmakuController != null && danmakuController.hasManualMatch();
+    }
+
+    public void showDanmakuManualSearch() {
+        if (danmakuController != null) danmakuController.showManualSearch();
+    }
+
+    public void clearManualDanmakuMatch() {
+        if (danmakuController != null) danmakuController.clearManualMatch();
     }
 
     @Override

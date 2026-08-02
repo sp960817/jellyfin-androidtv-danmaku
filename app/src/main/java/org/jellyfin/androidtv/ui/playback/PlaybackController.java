@@ -1297,6 +1297,13 @@ public class PlaybackController implements PlaybackControllerNotifiable {
         return !isPlaying() && mSeekPosition != -1 ? mSeekPosition : mCurrentPosition;
     }
 
+    public long getRealtimeCurrentPosition() {
+        // mCurrentPosition is refreshed by the playback progress callback and can be
+        // noticeably behind between callbacks. Overlays that animate against media
+        // time need the live ExoPlayer position instead.
+        return isPlaying() && hasInitializedVideoManager() ? mVideoManager.getCurrentPosition() : getCurrentPosition();
+    }
+
     public boolean isPaused() {
         return mPlaybackState == PlaybackState.PAUSED;
     }

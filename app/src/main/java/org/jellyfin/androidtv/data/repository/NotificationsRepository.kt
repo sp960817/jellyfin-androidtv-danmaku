@@ -6,11 +6,9 @@ import kotlinx.coroutines.flow.StateFlow
 import org.jellyfin.androidtv.BuildConfig
 import org.jellyfin.androidtv.R
 import org.jellyfin.androidtv.auth.model.Server
-import org.jellyfin.androidtv.auth.repository.ServerRepository
 import org.jellyfin.androidtv.data.model.AppNotification
 import org.jellyfin.androidtv.preference.SystemPreferences
 import org.jellyfin.androidtv.util.isTvDevice
-import org.jellyfin.sdk.model.ServerVersion
 
 interface NotificationsRepository {
 	val notifications: StateFlow<List<AppNotification>>
@@ -80,16 +78,7 @@ class NotificationsRepositoryImpl(
 		// Remove current update notification
 		_updateServerNotification?.let(::removeNotification)
 
-		val currentServerVersion = server?.version?.let(ServerVersion::fromString) ?: return
-		if (currentServerVersion < ServerRepository.upcomingMinimumServerVersion) {
-			_updateServerNotification =
-				addNotification(
-					message = context.getString(
-						R.string.app_notification_update_soon,
-						currentServerVersion,
-						ServerRepository.upcomingMinimumServerVersion
-					),
-				)
-		}
+		// This custom build is pinned to a known-compatible stable client baseline. Keep the hard
+		// minimum-version check during login, but do not warn about requirements of future clients.
 	}
 }

@@ -23,7 +23,7 @@ android {
 
 		// Release version
 		applicationId = namespace
-		versionName = project.getVersionName("0.19.9-danmaku.1")
+		versionName = project.getVersionName("0.19.9-danmaku.2")
 		versionCode = getVersionCode(versionName!!)
 	}
 

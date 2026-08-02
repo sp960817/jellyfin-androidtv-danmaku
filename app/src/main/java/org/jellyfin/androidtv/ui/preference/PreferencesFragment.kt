@@ -17,6 +17,8 @@ import org.jellyfin.androidtv.ui.preference.custom.ColorListPreference
 import org.jellyfin.androidtv.ui.preference.custom.ColorPickerDialogFragment
 import org.jellyfin.androidtv.ui.preference.custom.RichListDialogFragment
 import org.jellyfin.androidtv.ui.preference.custom.RichListPreference
+import org.jellyfin.androidtv.ui.preference.dsl.BindingEditTextPreference
+import org.jellyfin.androidtv.ui.preference.dsl.BindingEditTextPreferenceDialogFragment
 
 class PreferencesFragment : LeanbackSettingsFragmentCompat() {
 	override fun onPreferenceStartInitialScreen() {
@@ -45,6 +47,7 @@ class PreferencesFragment : LeanbackSettingsFragmentCompat() {
 	override fun onPreferenceDisplayDialog(caller: PreferenceFragmentCompat, pref: Preference): Boolean {
 		val fragment = when (pref) {
 			// Custom
+			is BindingEditTextPreference -> BindingEditTextPreferenceDialogFragment.newInstance(pref.key)
 			is ButtonRemapPreference -> ButtonRemapDialogFragment.newInstance(pref.key)
 			is RichListPreference<*> -> RichListDialogFragment.newInstance(pref.key)
 			is ColorListPreference -> ColorPickerDialogFragment.newInstance(pref.key)
